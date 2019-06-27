@@ -1,0 +1,130 @@
+﻿
+<!DOCTYPE html>
+<html>
+<head runat="server">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>测试Web Api - Jquery调用</title>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" type="text/javascript"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.4.min.js"></script>
+    <script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+    <script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
+</head>
+<body>
+    <div>
+        <fieldset>
+            <legend>
+                测试Web Api
+            </legend>
+            <a href="javascript:add()">添加(post)</a>
+            <a href="javascript:update(1)">更新(put)</a>
+            <a href="javascript:deletes(1)">删除(delete)</a>
+            <a href="javascript:getall()">列表(Get)</a>
+            <a href="javascript:getone()">实体(Get)</a>
+        </fieldset>
+        <table id="products">
+            <thead>
+                <tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th></tr>
+            </thead>
+            <tbody id="looptr"></tbody>
+        </table>
+        <div id="app">
+            <table  v-for="sa in datas" style="width:100%;">
+                <tr>
+                    <td>& {{sa.Id}};</td>
+                    <td>&  {{sa.Name}};</td>
+                    <td>& {{sa.Emali}};</td>
+                    <td>&  {{sa.Phone}};</td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <th>
+                       
+                    </th>
+                    <th>
+                      
+                    </th>
+                    <th>
+                       
+                    </th>
+                    <th>
+                      
+                    </th>
+                </tr>
+            </table>
+        </div>
+        <script type="text/javascript">
+            $(function () {
+                getall();
+            });
+
+            //获取某条信息
+            function getone() {
+                $.ajax({
+                    url: "/api/PostAPITest",
+                    type: "get",
+                    success: function (data) {
+                        alert(data.Name);
+                        var vue = new Vue({
+                            el: '#app',
+                            data: { datas: data }
+                            //data: { Name: data.Name, id: data.Id, emal: data.Email, phone: data.Phone }
+                        });
+                        alert(JSON.stringify(data));
+
+
+                    }
+                });
+            }
+
+            //获取列表
+            function getall() {
+                var str = "";
+                $.getJSON("/api/PostAPITest", function (products) {
+                    alert(JSON.stringify(products));
+                    $.each(products, function (index, product) {
+
+                        str += "<tr>"
+                        str += "<td>" + products[index].Id + "</td>";
+                        str += "<td>" + products[index].Name + "</td>";
+                        str += "<td>" + products[index].Email + "</td>";
+                        str += "<td>" + products[index].Phone + "</td>";
+                        str += "<tr>"
+                    });
+                    $("#looptr").html(str);
+                });
+            }
+
+            //新增
+            function add() {
+                $.ajax({
+                    url: "/api/PostAPITest/",
+                    type: "POST",
+                    data: { "Id": "4", "name": "zhangsan" },
+
+                    success: function (data) { alert(JSON.stringify(data)); }
+                });
+            }
+
+            //更新
+            function update(id) {
+                $.ajax({
+                    url: "/api/PostAPITest?id=4",
+                    type: "Put",
+                    data: { "Id": 1, "Name": "moditest", "Email": "23@123.com", "Phone": 89 },
+                    success: function (data) { alert(JSON.stringify(data)); }
+                });
+            }
+
+            //删除
+            function deletes(id) {
+                $.ajax({
+                    url: "/api/PostAPITest/4",
+                    type: "DELETE",
+                    success: function (data) { alert(data); }
+                });
+            }
+        </script>
+    </div>
+</body>
+</html>
